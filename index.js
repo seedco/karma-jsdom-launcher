@@ -1,8 +1,15 @@
 var jsdom = require("jsdom");
+var localStorage, jsdomGlobal;
+try {
+  localStorage = require("dom-storage");
+} catch(e) {};
+try {
+  jsdomGlobal = require("jsdom-global");
+} catch(e) {};
 
 var jsdomBrowser = function (baseBrowserDecorator) {
   baseBrowserDecorator(this);
-  
+
   this.name = "jsdom";
 
   this._start = function (url) {
@@ -13,7 +20,12 @@ var jsdomBrowser = function (baseBrowserDecorator) {
         ProcessExternalResources: ["script"]
       },
       created: function (error, window) {
-        // Do nothing.
+        if (localStorage) {
+          window.localStorage = localStorage;
+        }
+        if (jsdomGlobal) {
+          jsdomGlobal();
+        }
       }
     });
   };
